@@ -12,7 +12,7 @@ import seaborn as sns   # more data visualization
 data = pd.read_csv("creditcard_fraud_detection.csv")
 
 # seperate features (x) from target value (y)
-x = data.drop("Class", axis=1)
+X = data.drop("Class", axis=1)
 y = data["Class"]
 
 # visualize class distribution using a bar graph
@@ -25,13 +25,20 @@ plt.show()
 '''
 
 # create test and training subsets
-x_train, x_test, y_train, y_test = train_test_split(
-    x, y, test_size=0.2, random_state=42
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
 )
 
 # train model on data BEFORE resampling with SMOTE
-model = LogisticRegression()
-model.fit(x_train, y_train)
+model = LogisticRegression(max_iter=10000)
+model.fit(X_train, y_train)
 
-y_pred = model.predict(x_test)
+# predict target values on unknown inputs from the test set
+y_pred = model.predict(X_test)
+
+# accuracy of model on the testing set
+print("Accuracy BEFORE SMOTE:", round(accuracy_score(y_test, y_pred)*100, 2), "%\n")
+
+# classification report to measure how well the model is performing
+print("Classification Report BEFORE SMOTE:\n", classification_report(y_test, y_pred))
 
