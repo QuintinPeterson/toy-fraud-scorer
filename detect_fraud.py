@@ -42,3 +42,34 @@ print("Accuracy BEFORE SMOTE:", round(accuracy_score(target_test, target_pred)*1
 # classification report to measure how well the model is performing
 print("Classification Report BEFORE SMOTE:\n", classification_report(target_test, target_pred))
 
+# confusion matrix showing model is skewed to class 0 compared to class 1
+sns.heatmap(confusion_matrix(target_test, target_pred), annot=True, fmt='d', cmap='Blues')
+plt.title("Confusion Matrix BEFORE SMOTE")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# apply SMOTE to balance classes
+smote = SMOTE(sampling_strategy='minority', random_state=42)
+feature_train, target_train = smote.fit_resample(feature_train, target_train)  # pyright: ignore[reportAssignmentType]
+
+plt.bar(target_train.value_counts().index, target_train.value_counts().values,  # pyright: ignore[reportArgumentType]
+        color=['skyblue','salmon'])
+plt.xticks([0,1], ['Non-Fraud', 'Fraud'])
+plt.ylabel("Count")
+plt.title("Class Distribution AFTER SMOTE")
+plt.show()
+
+# train logistic regression
+model.fit(feature_train, target_train)
+
+target_pred = model.predict(feature_test)
+
+print("Accuracy AFTER SMOTE:", round(accuracy_score(target_test, target_pred)*100, 2), "%\n")
+print("Classification AFTER SMOTE:\n", classification_report(target_test, target_pred))
+
+sns.heatmap(confusion_matrix(target_test, target_pred), annot=True, fmt='d', cmap='Blues')
+plt.title("Confusion Matrix AFTER SMOTE")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
